@@ -59,7 +59,8 @@ class ISerialEvaluator(ABC):
             save_ckpt_fn: Callable = None,
             train_iter: int = -1,
             envstep: int = -1,
-            n_episode: Optional[int] = None
+            n_episode: Optional[int] = None,
+            replay_buffer: Optional[Any] = None,
     ) -> Any:
         raise NotImplementedError
 
