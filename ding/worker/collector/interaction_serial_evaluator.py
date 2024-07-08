@@ -9,6 +9,10 @@ from ding.utils import build_logger, EasyTimer, SERIAL_EVALUATOR_REGISTRY
 from ding.utils import get_world_size, get_rank, broadcast_object_list
 from .base_serial_evaluator import ISerialEvaluator, VectorEvalMonitor
 
+import shutil
+
+import os
+
 
 @SERIAL_EVALUATOR_REGISTRY.register('interaction')
 class InteractionSerialEvaluator(ISerialEvaluator):
@@ -189,6 +193,7 @@ class InteractionSerialEvaluator(ISerialEvaluator):
             n_episode: Optional[int] = None,
             force_render: bool = False,
             policy_kwargs: Optional[Dict] = {},
+            replay_buffer: Optional[any] = None
     ) -> Tuple[bool, Dict[str, List]]:
         '''
         Overview:
@@ -303,6 +308,14 @@ class InteractionSerialEvaluator(ISerialEvaluator):
             if episode_return > self._max_episode_return:
                 if save_ckpt_fn:
                     save_ckpt_fn('ckpt_best.pth.tar')
+                    replay_buffer.save_data('replay.pkl')
+                    print("exp_name: ", self._exp_name)
+                    if os.path.exists(self._exp_name+'/ckpt_best.pth.tar'):
+                        print('new record')
+                        shutil.copy(self._exp_name+'/ckpt_best.pth.tar', 'ckpt_best.pth.tar')
+                        os.rename(self._exp_name+'/ckpt_best.pth.tar', self._exp_name+'/cckpt_best.pth.tar')
+
+
                 self._max_episode_return = episode_return
             stop_flag = episode_return >= self._stop_value and train_iter > 0
             if stop_flag:
