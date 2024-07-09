@@ -5,6 +5,7 @@ from typing import Union, Any, Optional, List, Dict, Tuple
 import numpy as np
 import hickle
 import pickle
+import joblib
 
 from ding.worker.replay_buffer import IBuffer
 from ding.utils import SumSegmentTree, MinSegmentTree, BUFFER_REGISTRY
@@ -301,12 +302,12 @@ class AdvancedReplayBuffer(IBuffer):
             if os.path.dirname(file_name) != "":
                 os.makedirs(os.path.dirname(file_name))
         with open(file_name, 'wb') as file:
-            pickle.dump(self._data, file)
+            joblib.dump(self._data, file)
 
     def load_data(self, file_name: str):
         print("loading advanced buffer")
         with open(file_name, 'rb') as file:
-            data = pickle.load(file)
+            data = joblib.load(file)
         print("pushing data")
         self.push(data, 0)
 
