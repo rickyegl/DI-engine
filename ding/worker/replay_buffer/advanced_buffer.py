@@ -5,7 +5,6 @@ from typing import Union, Any, Optional, List, Dict, Tuple
 import numpy as np
 import hickle
 import pickle
-import joblib
 
 from ding.worker.replay_buffer import IBuffer
 from ding.utils import SumSegmentTree, MinSegmentTree, BUFFER_REGISTRY
@@ -111,6 +110,8 @@ class AdvancedReplayBuffer(IBuffer):
         self._rank = get_rank()
         self._replay_buffer_size = self._cfg.replay_buffer_size
         self._deepcopy = self._cfg.deepcopy
+
+        self._save_replay = True
         # ``_data`` is a circular queue to store data (full data or meta data)
         self._data = [None for _ in range(self._replay_buffer_size)]
         # Current valid data count, indicating how many elements in ``self._data`` is valid.
@@ -298,18 +299,17 @@ class AdvancedReplayBuffer(IBuffer):
             self._append(data, cur_collector_envstep)
 
     def save_data(self, file_name: str):
-        if not os.path.exists(os.path.dirname(file_name)):
-            if os.path.dirname(file_name) != "":
-                os.makedirs(os.path.dirname(file_name))
-        with open(file_name, 'wb') as file:
-            joblib.dump(self._data, file)
+        if self._save_replay:
+            if not os.path.exists(os.path.dirname(file_name)):
+                if os.path.dirname(file_name) != "":
+                    os.makedirs(os.path.dirname(file_name))
+            with open(file_name, 'wb') as file:
+                pickle.dump(self._data, file)
 
     def load_data(self, file_name: str):
         print("loading advanced buffer")
         with open(file_name, 'rb') as file:
-            data = joblib.load(file)
-        print("pushing data")
-        self.push(data, 0)
+            self.push(pickle.load(file), 0)
 
         
     def _sample_check(self, size: int, cur_learner_iter: int) -> Tuple[bool, str]:
