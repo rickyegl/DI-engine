@@ -308,7 +308,9 @@ class InteractionSerialEvaluator(ISerialEvaluator):
             if episode_return > self._max_episode_return:
                 if save_ckpt_fn:
                     save_ckpt_fn('ckpt_best.pth.tar')
+                    print("writing buffer")
                     replay_buffer.save_data('replay.pkl')
+                    print("buffer written")
                     print("exp_name: ", self._exp_name)
                     if os.path.exists(self._exp_name+'/ckpt/ckpt_best.pth.tar'):
                         print('new record')
