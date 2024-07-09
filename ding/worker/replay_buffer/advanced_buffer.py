@@ -4,6 +4,7 @@ import time
 from typing import Union, Any, Optional, List, Dict, Tuple
 import numpy as np
 import hickle
+import pickle
 
 from ding.worker.replay_buffer import IBuffer
 from ding.utils import SumSegmentTree, MinSegmentTree, BUFFER_REGISTRY
@@ -299,11 +300,17 @@ class AdvancedReplayBuffer(IBuffer):
         if not os.path.exists(os.path.dirname(file_name)):
             if os.path.dirname(file_name) != "":
                 os.makedirs(os.path.dirname(file_name))
-        hickle.dump(py_obj=self._data, file_obj=file_name)
+        with open(file_name, 'wb') as file:
+            pickle.dump(self._data, file)
 
     def load_data(self, file_name: str):
-        self.push(hickle.load(file_name), 0)
+        print("loading advanced buffer")
+        with open(file_name, 'rb') as file:
+            data = pickle.load(file)
+        print("pushing data")
+        self.push(data, 0)
 
+        
     def _sample_check(self, size: int, cur_learner_iter: int) -> Tuple[bool, str]:
         r"""
         Overview:
