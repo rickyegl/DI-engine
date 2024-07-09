@@ -313,6 +313,8 @@ class InteractionSerialEvaluator(ISerialEvaluator):
                     print("buffer written")
                     print("exp_name: ", self._exp_name)
                     if os.path.exists(self._exp_name+'/ckpt/ckpt_best.pth.tar'):
+                        if os.path.exists(self._exp_name+'/cckpt_best.pth.tar'):
+                            os.remove(self._exp_name+'/cckpt_best.pth.tar')
                         print('new record')
                         shutil.copy(self._exp_name+'/ckpt/ckpt_best.pth.tar', 'ckpt_best.pth.tar')
                         os.rename(self._exp_name+'/ckpt/ckpt_best.pth.tar', self._exp_name+'/cckpt_best.pth.tar')
