@@ -61,6 +61,7 @@ class ISerialEvaluator(ABC):
             envstep: int = -1,
             n_episode: Optional[int] = None,
             replay_buffer: Optional[Any] = None,
+            save_replay_buffer: Optional[bool] = False
     ) -> Any:
         raise NotImplementedError
 
