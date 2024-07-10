@@ -193,7 +193,8 @@ class InteractionSerialEvaluator(ISerialEvaluator):
             n_episode: Optional[int] = None,
             force_render: bool = False,
             policy_kwargs: Optional[Dict] = {},
-            replay_buffer: Optional[any] = None
+            replay_buffer: Optional[any] = None,
+            save_replay_buffer: Optional[bool] = False
     ) -> Tuple[bool, Dict[str, List]]:
         '''
         Overview:
@@ -316,9 +317,10 @@ class InteractionSerialEvaluator(ISerialEvaluator):
                         shutil.copy(self._exp_name+'/ckpt/ckpt_best.pth.tar', 'ckpt_best.pth.tar')
                         os.rename(self._exp_name+'/ckpt/ckpt_best.pth.tar', self._exp_name+'/cckpt_best.pth.tar')
 
-                    print("writing buffer")
-                    replay_buffer.save_data('replay.pkl')
-                    print("buffer written")
+                    if save_replay_buffer:	
+                        print("writing buffer")
+                        replay_buffer.save_data('replay.pkl')
+                        print("buffer written")
 
 
                 self._max_episode_return = episode_return
